@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0f3460"/>
+<meta name="description" content="Islamic Life Companion — Hijri Age, Prayer Times, Daily Hadith, Events Countdown"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<title>Islamic Life Companion</title>
+<script src="https://connect.facebook.net/en_US/fbinstant.6.3.js"></script>
+<style>
+:root{
+  --bg1:#1a1a2e;--bg2:#16213e;--bg3:#0f3460;
+  --card:rgba(255,255,255,.07);--border:rgba(255,215,0,.2);
+  --text:rgba(255,255,255,.92);--muted:rgba(255,255,255,.5);
+  --gold:#ffd700;--orange:#ff9500;--green:#4caf50;--blue:#1877f2;
+  --tab-h:64px;
+}
+.light{
+  --bg1:#faf6ee;--bg2:#f0e9d8;--bg3:#e0d0b0;
+  --card:rgba(255,255,255,.85);--border:rgba(180,130,0,.3);
+  --text:#2c1a0a;--muted:#8a7060;--gold:#b8860b;--orange:#c87000;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  font-family:'Segoe UI',Arial,sans-serif;color:var(--text);overscroll-behavior:none}
+body::before{content:'';position:fixed;inset:0;
+  background-image:radial-gradient(1px 1px at 15% 25%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 60% 10%,rgba(255,255,255,.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 85% 60%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 30% 75%,rgba(255,255,255,.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 70% 85%,rgba(255,255,255,.4) 0%,transparent 100%);
+  pointer-events:none;z-index:0}
+.light body::before{display:none}
+
+/* ── Header ── */
+#header{position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:rgba(15,52,96,.85);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border)}
+.light #header{background:rgba(224,208,176,.9)}
+#header h1{font-size:1rem;font-weight:700;color:var(--gold);letter-spacing:.5px}
+.header-btns{display:flex;gap:8px}
+.icon-btn{background:none;border:1px solid var(--border);border-radius:8px;
+  color:var(--text);padding:5px 9px;font-size:.8rem;cursor:pointer}
+
+/* ── Page scroll container ── */
+#pages{position:fixed;top:52px;bottom:var(--tab-h);left:0;right:0;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:1}
+.page{display:none;padding:14px 14px 20px;min-height:100%}
+.page.active{display:block}
+
+/* ── Tab bar ── */
+#tabbar{position:fixed;bottom:0;left:0;right:0;z-index:100;
+  display:flex;height:var(--tab-h);
+  background:rgba(15,52,96,.9);backdrop-filter:blur(12px);
+  border-top:1px solid var(--border)}
+.light #tabbar{background:rgba(224,208,176,.95)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;gap:2px;transition:color .2s;color:var(--muted);border:none;background:none}
+.tab.active{color:var(--gold)}
+.tab svg{width:20px;height:20px}
+.tab span{font-size:.6rem;font-weight:600;letter-spacing:.3px}
+
+/* ── Cards ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;
+  padding:18px;margin-bottom:12px;backdrop-filter:blur(8px)}
+.card-title{font-size:.68rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:10px}
+.card-gold{border-color:var(--gold);background:rgba(255,215,0,.06)}
+
+/* ── Today section ── */
+.hijri-big{text-align:center;padding:20px 0 10px}
+.hijri-day-num{font-size:4rem;font-weight:800;color:var(--gold);line-height:1;
+  text-shadow:0 0 30px rgba(255,215,0,.4)}
+.hijri-month-name{font-size:1.4rem;font-weight:600;color:var(--text);margin:4px 0}
+.hijri-year{font-size:.9rem;color:var(--muted)}
+.hijri-greg{font-size:.8rem;color:var(--muted);margin-top:4px}
+
+/* ── Event countdown cards ── */
+.event-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.event-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px;text-align:center}
+.event-card .ev-days{font-size:1.8rem;font-weight:800;color:var(--gold);line-height:1}
+.event-card .ev-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;margin-top:3px}
+.event-card .ev-name{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:6px}
+.event-card.next{border-color:var(--gold);background:rgba(255,215,0,.08)}
+
+/* ── Sunnah card ── */
+.sunnah-text{font-size:1.05rem;font-weight:600;color:var(--text);
+  text-align:center;padding:8px 0;line-height:1.5}
+.sunnah-sub{font-size:.75rem;color:var(--muted);text-align:center;margin-top:6px}
+
+/* ── Age result ── */
+.age-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.age-box{background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);
+  border-radius:12px;padding:12px 4px;text-align:center}
+.age-val{font-size:1.8rem;font-weight:800;color:var(--gold);line-height:1;
+  text-shadow:0 0 10px rgba(255,215,0,.4)}
+.age-lbl{font-size:.62rem;color:var(--muted);text-transform:uppercase;margin-top:3px}
+
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:12px;text-align:center}
+.stat-icon{font-size:1.4rem;margin-bottom:4px}
+.stat-val{font-size:1.4rem;font-weight:800;color:var(--gold)}
+.stat-lbl{font-size:.65rem;color:var(--muted);margin-top:2px}
+
+.milestone-card{background:rgba(76,175,80,.08);border:1px solid rgba(76,175,80,.3);
+  border-radius:14px;padding:16px;margin-bottom:12px}
+.milestone-title{font-size:.75rem;color:#4caf50;text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:10px}
+.milestone-item{display:flex;align-items:center;gap:8px;padding:5px 0;
+  font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.milestone-item:last-child{border:none}
+.milestone-item .mi-icon{font-size:1rem;flex-shrink:0}
+
+.date-row{background:rgba(255,255,255,.05);border-radius:10px;
+  padding:11px 14px;margin-bottom:10px}
+.date-row .dr-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:3px}
+.date-row .dr-value{font-size:.92rem;color:var(--text);font-weight:500}
+
+.birth-milestone{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);
+  border-radius:14px;padding:16px;margin-bottom:12px;text-align:center}
+.birth-milestone .bm-title{font-size:.72rem;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.birth-milestone .bm-month{font-size:1.1rem;font-weight:700;color:var(--gold)}
+.birth-milestone .bm-desc{font-size:.8rem;color:var(--muted);margin-top:6px;line-height:1.4}
+
+/* ── Input form ── */
+.form-label{font-size:.85rem;color:var(--muted);margin-bottom:8px;display:block}
+input[type=date]{width:100%;padding:14px;border-radius:12px;
+  border:1.5px solid var(--border);background:rgba(255,255,255,.08);
+  color:var(--text);font-size:1rem;outline:none;color-scheme:dark;
+  transition:border-color .2s}
+.light input[type=date]{background:rgba(255,255,255,.8);color-scheme:light}
+input[type=date]:focus{border-color:var(--gold)}
+.btn-gold{width:100%;margin-top:14px;padding:15px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:#1a1a2e;font-size:1rem;font-weight:700;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+  box-shadow:0 4px 20px rgba(255,149,0,.35)}
+.btn-gold:active{transform:scale(.97)}
+.btn-outline{width:100%;margin-top:10px;padding:13px;border-radius:12px;
+  border:1px solid var(--border);background:var(--card);
+  color:var(--text);font-size:.9rem;font-weight:600;cursor:pointer}
+.reset-link{display:block;text-align:center;color:rgba(255,215,0,.6);
+  font-size:.8rem;cursor:pointer;margin-top:14px;text-decoration:underline}
+.fun-fact{background:rgba(255,215,0,.06);border-inline-start:3px solid var(--gold);
+  border-radius:0 10px 10px 0;padding:10px 14px;font-size:.8rem;
+  color:var(--muted);line-height:1.5;margin-top:8px}
+.fun-fact strong{color:var(--gold)}
+
+/* ── Events page ── */
+.events-list{display:flex;flex-direction:column;gap:10px}
+.ev-row{display:flex;align-items:center;justify-content:space-between;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px}
+.ev-row.next-ev{border-color:var(--gold);background:rgba(255,215,0,.07)}
+.ev-info .ev-row-name{font-size:.95rem;font-weight:600;color:var(--text)}
+.ev-info .ev-row-date{font-size:.72rem;color:var(--muted);margin-top:3px}
+.ev-count-wrap{text-align:right}
+.ev-count-wrap .ev-count-num{font-size:1.6rem;font-weight:800;color:var(--gold)}
+.ev-count-wrap .ev-count-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase}
+.ev-row.passed .ev-count-num{color:var(--muted)}
+
+/* ── Daily page ── */
+.hadith-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:12px}
+.hadith-text{font-size:.92rem;color:var(--text);line-height:1.6;font-style:italic}
+.hadith-source{font-size:.72rem;color:var(--gold);margin-top:10px;font-weight:600}
+.hadith-nav{display:flex;gap:8px;margin-top:10px}
+.hadith-nav button{flex:1;padding:9px;border-radius:10px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);cursor:pointer;font-size:.8rem}
+
+.verse-card{background:rgba(76,175,80,.07);border:1px solid rgba(76,175,80,.25);
+  border-radius:18px;padding:20px;margin-bottom:12px}
+.verse-arabic{font-size:1.2rem;text-align:right;color:var(--text);
+  line-height:2;font-weight:500;direction:rtl;margin-bottom:12px}
+.verse-translation{font-size:.85rem;color:var(--muted);line-height:1.5;font-style:italic}
+.verse-ref{font-size:.72rem;color:#4caf50;margin-top:8px;font-weight:600}
+
+/* ── Tasbeeh ── */
+.tasbeeh-wrap{text-align:center;padding:10px 0}
+.tasbeeh-count{font-size:5rem;font-weight:900;color:var(--gold);
+  text-shadow:0 0 30px rgba(255,215,0,.4);line-height:1}
+.tasbeeh-target{font-size:.8rem;color:var(--muted);margin:8px 0 20px}
+.tasbeeh-btn{width:100%;height:100px;border-radius:20px;border:none;
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:#1a1a2e;font-size:1.3rem;font-weight:800;cursor:pointer;
+  box-shadow:0 6px 24px rgba(255,149,0,.4);transition:transform .1s}
+.tasbeeh-btn:active{transform:scale(.95)}
+.tasbeeh-controls{display:flex;gap:8px;margin-top:10px}
+.tasbeeh-controls button{flex:1;padding:10px;border-radius:10px;
+  border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:.82rem}
+
+/* ── Duas ── */
+.dua-cats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.dua-cat-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);
+  background:var(--card);color:var(--muted);font-size:.75rem;cursor:pointer}
+.dua-cat-btn.active{background:rgba(255,215,0,.15);color:var(--gold);border-color:var(--gold)}
+.dua-item{background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px;margin-bottom:8px}
+.dua-arabic{font-size:1rem;text-align:right;direction:rtl;line-height:1.8;
+  color:var(--text);margin-bottom:8px}
+.dua-translation{font-size:.8rem;color:var(--muted);line-height:1.4;font-style:italic}
+.dua-source{font-size:.68rem;color:var(--gold);margin-top:6px}
+
+/* ── Share / Card ── */
+.share-preview{border-radius:16px;overflow:hidden;margin-bottom:14px;
+  box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.share-preview canvas{width:100%;display:block}
+.btn-share{width:100%;padding:14px;border-radius:12px;border:none;
+  background:var(--blue);color:#fff;font-size:.95rem;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.btn-download{width:100%;padding:13px;border-radius:12px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-size:.9rem;font-weight:600;cursor:pointer}
+
+/* ── Language bar ── */
+.lang-bar{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
+.lang-btn{padding:4px 10px;border-radius:16px;border:1px solid var(--border);
+  background:var(--card);color:var(--muted);font-size:.7rem;cursor:pointer}
+.lang-btn.active{background:rgba(255,215,0,.15);color:var(--gold);border-color:var(--gold)}
+
+/* ── Month progress bar ── */
+.month-progress{height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin-top:8px}
+.month-progress-fill{height:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--gold),var(--orange));transition:width .6s}
+
+/* ── Animations ── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fade-in{animation:fadeIn .3s ease forwards}
+@keyframes countUp{from{transform:scale(.8)}to{transform:scale(1)}}
+.count-up{animation:countUp .25s ease}
+
+/* ── Misc ── */
+hr.sep{border:none;border-top:1px solid rgba(255,255,255,.08);margin:14px 0}
+.section-head{font-size:.72rem;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.8px;margin:16px 0 8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.65rem;
+  font-weight:600;background:rgba(255,215,0,.2);color:var(--gold)}
+[dir=rtl] .fun-fact{border-radius:10px 0 0 10px;border-inline-start:none;border-inline-end:3px solid var(--gold)}
+</style>
+</head>
+<body class="dark">
+
+<!-- Header -->
+<div id="header">
+  <div style="display:flex;align-items:center;gap:8px">
+    <span style="font-size:1.3rem">&#9770;&#65039;</span>
+    <h1 id="h-app-name">Islamic Life Companion</h1>
+  </div>
+  <div class="header-btns">
+    <button class="icon-btn" onclick="toggleTheme()" title="Theme">&#9728;</button>
+    <button class="icon-btn" onclick="showLangPanel()" title="Language">&#127760;</button>
+  </div>
+</div>
+
+<!-- Pages -->
+<div id="pages">
+
+  <!-- ═══ HOME ═══ -->
+  <div class="page active" id="page-home">
+    <!-- Language bar -->
+    <div class="lang-bar" id="langBar"></div>
+
+    <!-- Today's Hijri date -->
+    <div class="card card-gold fade-in">
+      <div class="hijri-big">
+        <div class="hijri-day-num" id="h-day">—</div>
+        <div class="hijri-month-name" id="h-month-name">—</div>
+        <div class="hijri-year" id="h-year-ah">— AH</div>
+        <div class="hijri-greg" id="h-greg-date">—</div>
+      </div>
+      <div class="month-progress">
+        <div class="month-progress-fill" id="monthProgress" style="width:0%"></div>
+      </div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:6px;text-align:center" id="h-month-remaining"></div>
+    </div>
+
+    <!-- Islamic month info -->
+    <div class="card fade-in" id="monthInfoCard">
+      <div class="card-title" id="t-about-month">About this Month</div>
+      <div style="font-size:.88rem;color:var(--text);line-height:1.6" id="monthDesc"></div>
+    </div>
+
+    <!-- Upcoming events -->
+    <div class="section-head" id="t-upcoming">Upcoming Events</div>
+    <div class="event-grid" id="upcomingEvents"></div>
+
+    <!-- Daily Sunnah -->
+    <div class="section-head" id="t-daily-sunnah">Daily Sunnah</div>
+    <div class="card fade-in">
+      <div class="sunnah-text" id="sunnahText"></div>
+      <div class="sunnah-sub" id="t-sunnah-sub">A simple act of worship, every day.</div>
+    </div>
+  </div>
+
+  <!-- ═══ MY AGE ═══ -->
+  <div class="page" id="page-age">
+    <div id="ageInput" class="fade-in">
+      <div class="card">
+        <div class="card-title" id="t-enter-dob">Enter Your Date of Birth</div>
+        <label class="form-label" id="t-dob-label">Gregorian date of birth</label>
+        <input type="date" id="dob" max=""/>
+        <button class="btn-gold" onclick="calculateAge()" id="t-calc-btn">Calculate My Hijri Age</button>
+      </div>
+    </div>
+
+    <div id="ageResult" style="display:none" class="fade-in">
+      <!-- Main age -->
+      <div class="card card-gold">
+        <div class="card-title" id="t-your-age">Your Hijri Age</div>
+        <div class="age-grid">
+          <div class="age-box"><div class="age-val" id="rYears">0</div><div class="age-lbl" id="t-ry">Years</div></div>
+          <div class="age-box"><div class="age-val" id="rMonths">0</div><div class="age-lbl" id="t-rm">Months</div></div>
+          <div class="age-box"><div class="age-val" id="rDays">0</div><div class="age-lbl" id="t-rd">Days</div></div>
+        </div>
+        <div class="fun-fact" id="rFact"></div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="section-head" id="t-life-stats">Life in Numbers</div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-icon">🌙</div><div class="stat-val" id="sRamadans">0</div><div class="stat-lbl" id="t-s-ramadans">Ramadans</div></div>
+        <div class="stat-box"><div class="stat-icon">✨</div><div class="stat-val" id="sEids">0</div><div class="stat-lbl" id="t-s-eids">Eids</div></div>
+        <div class="stat-box"><div class="stat-icon">📅</div><div class="stat-val" id="sTotalDays">0</div><div class="stat-lbl" id="t-s-days">Hijri Days</div></div>
+        <div class="stat-box"><div class="stat-icon">🕌</div><div class="stat-val" id="sFridays">0</div><div class="stat-lbl" id="t-s-fridays">Fridays</div></div>
+      </div>
+
+      <!-- Hijri dates -->
+      <div class="date-row"><div class="dr-label" id="t-birth-hijri">Hijri Birth Date</div><div class="dr-value" id="rBirthHijri"></div></div>
+      <div class="date-row"><div class="dr-label" id="t-next-birthday">Next Hijri Birthday</div><div class="dr-value" id="rNextBirthday"></div></div>
+      <div class="date-row"><div class="dr-label" id="t-day-born">Day of Week Born</div><div class="dr-value" id="rDayBorn"></div></div>
+      <div class="date-row"><div class="dr-label" id="t-islamic-century">Islamic Century</div><div class="dr-value" id="rCentury"></div></div>
+
+      <!-- Birth month milestone -->
+      <div class="birth-milestone" id="birthMilestone">
+        <div class="bm-title" id="t-born-in">You were born in</div>
+        <div class="bm-month" id="bmMonth"></div>
+        <div class="bm-desc" id="bmDesc"></div>
+      </div>
+
+      <!-- Milestones -->
+      <div class="milestone-card">
+        <div class="milestone-title" id="t-you-have-witnessed">You have witnessed</div>
+        <div id="milestoneList"></div>
+      </div>
+
+      <button class="btn-outline" onclick="goShare()" id="t-make-card">&#127760; Generate Shareable Card</button>
+      <span class="reset-link" onclick="resetAge()" id="t-reset-age">← Calculate for another date</span>
+    </div>
+  </div>
+
+  <!-- ═══ EVENTS ═══ -->
+  <div class="page" id="page-events">
+    <div class="section-head" id="t-islamic-calendar">Islamic Calendar Events</div>
+    <div class="events-list" id="eventsList"></div>
+  </div>
+
+  <!-- ═══ DAILY ═══ -->
+  <div class="page" id="page-daily">
+    <!-- Hadith -->
+    <div class="section-head" id="t-daily-hadith">Daily Hadith</div>
+    <div class="hadith-card">
+      <div class="hadith-text" id="hadithText"></div>
+      <div class="hadith-source" id="hadithSource"></div>
+      <div class="hadith-nav">
+        <button onclick="prevHadith()" id="t-prev">&#8592; Previous</button>
+        <button onclick="nextHadith()" id="t-next">Next &#8594;</button>
+      </div>
+    </div>
+
+    <!-- Quran verse -->
+    <div class="section-head" id="t-daily-verse">Daily Verse</div>
+    <div class="verse-card">
+      <div class="verse-arabic" id="verseArabic"></div>
+      <div class="verse-translation" id="verseTranslation"></div>
+      <div class="verse-ref" id="verseRef"></div>
+      <div class="hadith-nav" style="margin-top:10px">
+        <button onclick="prevVerse()">&#8592;</button>
+        <button onclick="nextVerse()">&#8594;</button>
+      </div>
+    </div>
+
+    <!-- Tasbeeh -->
+    <div class="section-head" id="t-tasbeeh">Tasbeeh Counter</div>
+    <div class="card">
+      <div class="tasbeeh-wrap">
+        <div class="tasbeeh-count" id="tasbeehCount">0</div>
+        <div class="tasbeeh-target" id="tasbeehTarget">Target: 33</div>
+      </div>
+      <button class="tasbeeh-btn" onclick="tapTasbeeh()">&#8853; Tap</button>
+      <div class="tasbeeh-controls">
+        <button onclick="setTarget(33)">33</button>
+        <button onclick="setTarget(99)">99</button>
+        <button onclick="setTarget(100)">100</button>
+        <button onclick="resetTasbeeh()" id="t-reset">Reset</button>
+      </div>
+    </div>
+
+    <!-- Duas -->
+    <div class="section-head" id="t-duas">Daily Duas</div>
+    <div class="dua-cats" id="duaCats"></div>
+    <div id="duaList"></div>
+  </div>
+
+  <!-- ═══ SHARE ═══ -->
+  <div class="page" id="page-share">
+    <div class="section-head" id="t-your-card">Your Islamic Card</div>
+    <div id="shareNoAge" class="card" style="text-align:center;padding:30px">
+      <div style="font-size:2rem;margin-bottom:10px">&#9770;&#65039;</div>
+      <div style="font-size:.9rem;color:var(--muted)" id="t-no-age-msg">Go to My Age tab, enter your birth date, then come back to generate your card.</div>
+    </div>
+    <div id="shareWithAge" style="display:none">
+      <div class="share-preview"><canvas id="shareCanvas" width="1080" height="1080"></canvas></div>
+      <button class="btn-share" onclick="shareCard()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+        <span id="t-share-fb">Share on Facebook</span>
+      </button>
+      <button class="btn-download" onclick="downloadCard()" id="t-download">&#11015; Download Card</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Tab bar -->
+<div id="tabbar">
+  <button class="tab active" onclick="showTab('home',this)">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <span id="t-tab-home">Home</span>
+  </button>
+  <button class="tab" onclick="showTab('age',this)">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+    <span id="t-tab-age">My Age</span>
+  </button>
+  <button class="tab" onclick="showTab('events',this)">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+    <span id="t-tab-events">Events</span>
+  </button>
+  <button class="tab" onclick="showTab('daily',this)">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    <span id="t-tab-daily">Daily</span>
+  </button>
+  <button class="tab" onclick="showTab('share',this)">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+    <span id="t-tab-share">Share</span>
+  </button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════
+
+var HADITHS = [
+  {text:'"The best of you are those who learn the Quran and teach it."',source:'Sahih al-Bukhari 5027'},
+  {text:'"Actions are judged by intentions, so each man will have what he intended."',source:'Sahih al-Bukhari 1, Sahih Muslim 1907'},
+  {text:'"None of you truly believes until he loves for his brother what he loves for himself."',source:'Sahih al-Bukhari 13, Sahih Muslim 45'},
+  {text:'"Smiling at your brother is an act of charity."',source:'Jami\' at-Tirmidhi 1956'},
+  {text:'"The strongest man is not the one who wrestles. The strongest is the one who controls himself in anger."',source:'Sahih al-Bukhari 6114'},
+  {text:'"Whoever believes in Allah and the Last Day should speak good or keep silent."',source:'Sahih al-Bukhari 6018'},
+  {text:'"Make things easy, do not make things difficult. Give glad tidings, do not make people flee."',source:'Sahih al-Bukhari 69'},
+  {text:'"The upper hand is better than the lower hand. The upper hand is the one that gives, and the lower hand is the one that takes."',source:'Sahih al-Bukhari 1427'},
+  {text:'"Cleanliness is half of faith."',source:'Sahih Muslim 223'},
+  {text:'"Every act of kindness is charity."',source:'Sahih al-Bukhari 2989'},
+  {text:'"The world is a prison for the believer and a paradise for the disbeliever."',source:'Sahih Muslim 2956'},
+  {text:'"Whoever removes a worldly grief from a believer, Allah will remove from him one of the griefs of the Day of Resurrection."',source:'Sahih Muslim 2699'},
+  {text:'"Do not waste water even if you were at a running stream."',source:'Sunan Ibn Majah 425'},
+  {text:'"Feed the hungry, visit the sick, and free the captive."',source:'Sahih al-Bukhari 5373'},
+  {text:'"Be in this world as if you were a stranger or a traveler along a path."',source:'Sahih al-Bukhari 6416'},
+  {text:'"The most beloved of deeds to Allah are those done consistently, even if they are small."',source:'Sahih al-Bukhari 6465'},
+  {text:'"Whoever is not grateful to people is not grateful to Allah."',source:'Sunan Abu Dawud 4811'},
+  {text:'"Tie your camel, then put your trust in Allah."',source:'Jami\' at-Tirmidhi 2517'},
+  {text:'"The merciful will be shown mercy by the Most Merciful. Be merciful to those on earth, and the One in heaven will have mercy upon you."',source:'Jami\' at-Tirmidhi 1924'},
+  {text:'"There is a piece of flesh in the body. If it is sound, the whole body is sound; if it is corrupt, the whole body is corrupt. Verily, it is the heart."',source:'Sahih al-Bukhari 52'},
+  {text:'"The dua of a Muslim for his brother in his absence is answered."',source:'Sahih Muslim 2733'},
+  {text:'"Seek knowledge from the cradle to the grave."',source:'Attributed saying'},
+  {text:'"Whoever treads a path in search of knowledge, Allah will make easy for him a path to Paradise."',source:'Sahih Muslim 2699'},
+  {text:'"The best charity is that given to a relative who does not like you."',source:'Sunan Abu Dawud 1666'},
+  {text:'"Visit the sick, feed the hungry, and free those in difficulty — this is what Allah commanded."',source:'Sahih al-Bukhari 5649'},
+  {text:'"A good word is charity."',source:'Sahih al-Bukhari 2891'},
+  {text:'"Do not belittle any good deed, even if it is just greeting your brother with a cheerful face."',source:'Sahih Muslim 2626'},
+  {text:'"Modesty is part of faith."',source:'Sahih al-Bukhari 24'},
+  {text:'"The rights of the road: lower the gaze, remove harm from the road, and return the greeting."',source:'Sahih al-Bukhari 2465'},
+  {text:'"Whoever shows no mercy will be shown no mercy."',source:'Sahih al-Bukhari 5997'}
+];
+
+var VERSES = [
+  {arabic:'إِنَّ مَعَ الْعُسْرِ يُسْرًا',translation:'Indeed, with hardship comes ease.',ref:'Quran 94:6'},
+  {arabic:'وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا',translation:'And whoever fears Allah — He will make for him a way out.',ref:'Quran 65:2'},
+  {arabic:'فَاذْكُرُونِي أَذْكُرْكُمْ',translation:'So remember Me; I will remember you.',ref:'Quran 2:152'},
+  {arabic:'وَلَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ',translation:'And do not despair of Allah\'s mercy.',ref:'Quran 39:53'},
+  {arabic:'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ',translation:'Sufficient for us is Allah, and He is the best disposer of affairs.',ref:'Quran 3:173'},
+  {arabic:'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',translation:'Indeed, Allah is with the patient.',ref:'Quran 2:153'},
+  {arabic:'وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ',translation:'And when My servants ask you concerning Me — indeed I am near.',ref:'Quran 2:186'},
+  {arabic:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً',translation:'Our Lord, give us good in this world and good in the Hereafter.',ref:'Quran 2:201'},
+  {arabic:'وَقُل رَّبِّ زِدْنِي عِلْمًا',translation:'And say: My Lord, increase me in knowledge.',ref:'Quran 20:114'},
+  {arabic:'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',translation:'Verily, in the remembrance of Allah do hearts find rest.',ref:'Quran 13:28'},
+  {arabic:'وَاللَّهُ يُحِبُّ الصَّابِرِينَ',translation:'And Allah loves the patient.',ref:'Quran 3:146'},
+  {arabic:'إِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ',translation:'Indeed, Allah does not allow to be lost the reward of those who do good.',ref:'Quran 9:120'},
+  {arabic:'وَكَانَ اللَّهُ غَفُورًا رَّحِيمًا',translation:'And Allah is ever Forgiving and Merciful.',ref:'Quran 4:96'},
+  {arabic:'إِنَّ الْحَسَنَاتِ يُذْهِبْنَ السَّيِّئَاتِ',translation:'Indeed, good deeds do away with misdeeds.',ref:'Quran 11:114'},
+  {arabic:'رَبَّنَا لَا تُؤَاخِذْنَا إِن نَّسِينَا أَوْ أَخْطَأْنَا',translation:'Our Lord, do not impose blame upon us if we forget or make an error.',ref:'Quran 2:286'},
+  {arabic:'وَمَا أَصَابَكَ مِن سَيِّئَةٍ فَمِن نَّفْسِكَ',translation:'Whatever evil befalls you is from yourself.',ref:'Quran 4:79'},
+  {arabic:'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا',translation:'For indeed, with hardship will be ease.',ref:'Quran 94:5'},
+  {arabic:'وَتَوَكَّلْ عَلَى اللَّهِ وَكَفَى بِاللَّهِ وَكِيلًا',translation:'And rely upon Allah. And sufficient is Allah as Disposer of affairs.',ref:'Quran 4:81'},
+  {arabic:'وَاصْبِرْ فَإِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ',translation:'And be patient, for indeed, Allah does not allow to be lost the reward of those who do good.',ref:'Quran 11:115'},
+  {arabic:'رَبِّ اشْرَحْ لِي صَدْرِي',translation:'My Lord, expand for me my breast [with assurance].',ref:'Quran 20:25'}
+];
+
+var DUAS = {
+  morning:[
+    {arabic:'اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا',translation:'O Allah, by You we enter the morning and by You we enter the evening.',source:'Abu Dawud'},
+    {arabic:'أَصْبَحْنَا عَلَى فِطْرَةِ الْإِسْلَامِ وَعَلَى كَلِمَةِ الْإِخْلَاصِ',translation:'We have entered the morning upon the fitrah of Islam and the word of sincerity.',source:'Ahmad'},
+    {arabic:'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا وَرِزْقًا طَيِّبًا',translation:'O Allah, I ask You for beneficial knowledge, wholesome provision, and accepted deeds.',source:'Ibn Majah'}
+  ],
+  evening:[
+    {arabic:'اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا',translation:'O Allah, by You we enter the evening and by You we enter the morning.',source:'Abu Dawud'},
+    {arabic:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ',translation:'I seek refuge in the perfect words of Allah from the evil of what He created.',source:'Muslim'}
+  ],
+  food:[
+    {arabic:'بِسْمِ اللَّهِ',translation:'In the name of Allah.',source:'Bukhari'},
+    {arabic:'اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ',translation:'O Allah, bless us in what You have provided us and protect us from the punishment of the Fire.',source:'Ibn al-Sunni'},
+    {arabic:'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا',translation:'All praise is to Allah who fed us and gave us drink.',source:'Abu Dawud'}
+  ],
+  sleep:[
+    {arabic:'اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا',translation:'O Allah, with Your name I die and I live.',source:'Bukhari'},
+    {arabic:'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ',translation:'Glory be to You O Allah, and with Your praise, I testify there is no god but You.',source:'Nasa\'i'},
+    {arabic:'اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ',translation:'O Allah, protect me from Your punishment on the Day You resurrect Your servants.',source:'Abu Dawud'}
+  ],
+  travel:[
+    {arabic:'اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا الْبِرَّ وَالتَّقْوَى',translation:'O Allah, we ask You in this journey of ours for righteousness and piety.',source:'Muslim'},
+    {arabic:'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا',translation:'Glory be to the One who has subjected this to us.',source:'Abu Dawud'}
+  ],
+  anxiety:[
+    {arabic:'حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ',translation:'Allah is sufficient for me; there is no god but He. Upon Him I rely.',source:'Abu Dawud'},
+    {arabic:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ',translation:'O Allah, I seek refuge in You from worry and grief.',source:'Bukhari'}
+  ]
+};
+
+var SUNNAH = [
+  'Smile — it is an act of charity.',
+  'Say Bismillah before eating or drinking.',
+  'Enter the bathroom with your left foot.',
+  'Use your right hand to eat and drink.',
+  'Say Salam to those you know and those you don\'t.',
+  'Drink water while sitting.',
+  'Recite Ayat al-Kursi after each prayer.',
+  'Make wudu before sleeping.',
+  'Avoid eating until you are hungry; stop before you are full.',
+  'Read Surah Al-Kahf every Friday.',
+  'Say Alhamdulillah when you sneeze.',
+  'Begin with the right side when dressing.',
+  'Pray two Rak\'ahs of Tahiyyat al-Masjid when entering the mosque.',
+  'Give charity, even a small amount, every day.',
+  'Visit the sick — it is a great act of worship.',
+  'Remove harmful objects from the path — it is charity.',
+  'Make istighfar (seek forgiveness) at least 70 times a day.',
+  'Recite SubhanAllah 33 times, Alhamdulillah 33 times, Allahu Akbar 34 times after prayer.',
+  'Fast Mondays and Thursdays — the Prophet fasted them regularly.',
+  'Keep ties of kinship. Call a relative today.',
+  'Say "La hawla wa la quwwata illa billah" often.',
+  'Send Salawat upon the Prophet — especially on Fridays.',
+  'Honor your guests.',
+  'Be kind to neighbors.',
+  'Lower your gaze.',
+  'Keep your tongue moist with the remembrance of Allah.',
+  'Make intention before every act.',
+  'Sleep on your right side.',
+  'Say Alhamdulillah after waking up.',
+  'Recite the last two verses of Surah Al-Baqarah before sleeping.'
+];
+
+var HIJRI_MONTHS_EN = ['Muharram','Safar',"Rabi' al-Awwal","Rabi' al-Thani",'Jumada al-Ula','Jumada al-Akhirah','Rajab',"Sha'ban",'Ramadan','Shawwal','Dhu al-Qi\'dah','Dhu al-Hijjah'];
+var HIJRI_MONTHS_AR = ['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+
+var MONTH_DESC = [
+  "Muharram is the first month of the Hijri calendar and one of the four sacred months. It contains Ashura (the 10th), a day of great virtue when Allah saved Musa ﷺ.",
+  "Safar is the second month of the Hijri year. It is a regular month — no special restrictions or extra virtues are attached to it in authentic narrations.",
+  "Rabi' al-Awwal is beloved to Muslims as the birth month of the Prophet Muhammad ﷺ. It is a time to increase Salawat upon him.",
+  "Rabi' al-Thani is the fourth month of the Hijri year. It is a continuation of the blessed season of sending prayers upon the Prophet ﷺ.",
+  "Jumada al-Ula is the fifth month. Its name is derived from 'jumad,' meaning frozen — a reference to when water freezes in the Arabian Peninsula.",
+  "Jumada al-Akhirah is the sixth month. It rounds off the first half of the Hijri year. A time for reflection on one's progress.",
+  "Rajab is one of the four sacred months. The Prophet ﷺ said: 'Rajab is Allah's month, Sha'ban is my month, Ramadan is my Ummah's month.' Increase worship in this blessed month.",
+  "Sha'ban is a neglected yet precious month. The Prophet ﷺ would fast most of it. Our deeds are lifted to Allah in Sha'ban, so prepare for Ramadan now.",
+  "Ramadan — the holiest month of the year. Fasting is obligatory, the Quran was revealed, and Laylat al-Qadr is within it. Every good deed is multiplied.",
+  "Shawwal begins with Eid al-Fitr. Fasting six days of Shawwal after Ramadan equals fasting the entire year. A month of gratitude and continuity.",
+  "Dhu al-Qi'dah is one of the four sacred months and a time of preparation for Hajj. Pilgrims travel during this month.",
+  "Dhu al-Hijjah is the month of Hajj and contains the 10 most virtuous days of the year. The Day of Arafah (9th) and Eid al-Adha (10th) are within it."
+];
+
+var ISLAMIC_EVENTS_DEF = [
+  {key:'new_year',  name:'Islamic New Year', nameAr:'رأس السنة الهجرية', month:1,  day:1},
+  {key:'ashura',   name:'Ashura',            nameAr:'عاشوراء',            month:1,  day:10},
+  {key:'mawlid',   name:'Mawlid al-Nabi',   nameAr:'المولد النبوي',      month:3,  day:12},
+  {key:'isra',     name:"Isra' and Mi'raj",  nameAr:'الإسراء والمعراج',  month:7,  day:27},
+  {key:'shaban15', name:'15th of Sha\'ban',  nameAr:'نصف شعبان',          month:8,  day:15},
+  {key:'ramadan',  name:'Ramadan Begins',    nameAr:'بداية رمضان',        month:9,  day:1},
+  {key:'laylaQadr',name:'Laylat al-Qadr',   nameAr:'ليلة القدر',         month:9,  day:27},
+  {key:'eid_fitr', name:'Eid al-Fitr',       nameAr:'عيد الفطر',         month:10, day:1},
+  {key:'arafah',   name:'Day of Arafah',     nameAr:'يوم عرفة',          month:12, day:9},
+  {key:'eid_adha', name:'Eid al-Adha',       nameAr:'عيد الأضحى',        month:12, day:10},
+];
+
+// ══════════════════════════════════════════════════════════════
+// TRANSLATIONS
+// ══════════════════════════════════════════════════════════════
+var LANGS = {
+  en:{name:'English',dir:'ltr'},ar:{name:'العربية',dir:'rtl'},
+  fr:{name:'Français',dir:'ltr'},tr:{name:'Türkçe',dir:'ltr'},
+  ur:{name:'اردو',dir:'rtl'},fa:{name:'فارسی',dir:'rtl'},
+  id:{name:'Indonesia',dir:'ltr'},ms:{name:'Melayu',dir:'ltr'},
+  es:{name:'Español',dir:'ltr'},de:{name:'Deutsch',dir:'ltr'},
+  bn:{name:'বাংলা',dir:'ltr'},hi:{name:'हिन्दी',dir:'ltr'}
+};
+
+var T = {
+  en:{appName:'Islamic Life Companion',tabHome:'Home',tabAge:'My Age',tabEvents:'Events',tabDaily:'Daily',tabShare:'Share',
+    aboutMonth:'About this Month',upcoming:'Upcoming Events',dailySunnah:'Daily Sunnah',sunnahSub:'A simple act, every day.',
+    enterDob:'Enter Your Date of Birth',dobLabel:'Gregorian date of birth',calcBtn:'Calculate My Hijri Age',
+    yourAge:'Your Hijri Age',lifeStats:'Life in Numbers',sRamadans:'Ramadans',sEids:'Eids',sDays:'Hijri Days',sFridays:'Fridays',
+    birthHijri:'Hijri Birth Date',nextBirthday:'Next Hijri Birthday',dayBorn:'Day of Week Born',islamicCentury:'Islamic Century',
+    bornIn:'You were born in',youWitnessed:'You have witnessed',makeCard:'Generate Shareable Card',resetAge:'← Calculate for another date',
+    islamicCal:'Islamic Calendar Events',dailyHadith:'Daily Hadith',dailyVerse:'Daily Verse',tasbeeh:'Tasbeeh Counter',
+    duas:'Daily Duas',yourCard:'Your Islamic Card',noAgeMsg:'Enter your birth date in the My Age tab to generate your card.',
+    shareFb:'Share on Facebook',download:'↓ Download Card',years:'Years',months:'Months',days:'Days',
+    ry:'Years',rm:'Months',rd:'Days',prev:'← Previous',next:'Next →',reset:'Reset',
+    daysLeft:'days left in this month',factDays:'You have lived approximately %d days in the Hijri calendar.',
+    proverb:'"When a man reaches forty, his account is settled." — Arab proverb',
+    dayNames:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+    duaCats:{morning:'Morning',evening:'Evening',food:'Food',sleep:'Sleep',travel:'Travel',anxiety:'Anxiety'}},
+  ar:{appName:'الرفيق الإسلامي',tabHome:'الرئيسية',tabAge:'عمري',tabEvents:'المناسبات',tabDaily:'يومي',tabShare:'شارك',
+    aboutMonth:'عن هذا الشهر',upcoming:'المناسبات القادمة',dailySunnah:'سنة اليوم',sunnahSub:'عمل بسيط، كل يوم.',
+    enterDob:'أدخل تاريخ ميلادك',dobLabel:'تاريخ الميلاد الميلادي',calcBtn:'احسب عمري الهجري',
+    yourAge:'عمرك الهجري',lifeStats:'حياتك بالأرقام',sRamadans:'رمضانات',sEids:'أعياد',sDays:'أيام هجرية',sFridays:'جُمَع',
+    birthHijri:'تاريخ ميلادك الهجري',nextBirthday:'عيد ميلادك الهجري القادم',dayBorn:'يوم الأسبوع الذي وُلدت فيه',islamicCentury:'القرن الهجري',
+    bornIn:'وُلدت في',youWitnessed:'شهدت في حياتك',makeCard:'إنشاء بطاقة قابلة للمشاركة',resetAge:'→ احسب لتاريخ آخر',
+    islamicCal:'المناسبات الإسلامية',dailyHadith:'حديث اليوم',dailyVerse:'آية اليوم',tasbeeh:'المسبحة الرقمية',
+    duas:'أدعية اليوم',yourCard:'بطاقتك الإسلامية',noAgeMsg:'أدخل تاريخ ميلادك في تبويب "عمري" لإنشاء بطاقتك.',
+    shareFb:'شارك على فيسبوك',download:'↓ تحميل البطاقة',years:'سنوات',months:'أشهر',days:'أيام',
+    ry:'سنة',rm:'شهر',rd:'يوم',prev:'→ السابق',next:'التالي ←',reset:'إعادة',
+    daysLeft:'يوم متبقٍ في هذا الشهر',factDays:'عشت تقريباً %d يوماً بالتقويم الهجري.',
+    proverb:'"إذا بلغ المرء الأربعين استوفى حسابه." — مثل عربي',
+    dayNames:['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],
+    duaCats:{morning:'الصباح',evening:'المساء',food:'الطعام',sleep:'النوم',travel:'السفر',anxiety:'القلق'}},
+  fr:{appName:'Compagnon Islamique',tabHome:'Accueil',tabAge:'Mon Âge',tabEvents:'Événements',tabDaily:'Quotidien',tabShare:'Partager',
+    aboutMonth:'À propos du mois',upcoming:'Prochains événements',dailySunnah:'Sunna du jour',sunnahSub:'Un acte simple, chaque jour.',
+    enterDob:'Votre date de naissance',dobLabel:'Date de naissance (grégorienne)',calcBtn:'Calculer mon âge hégirien',
+    yourAge:'Votre âge hégirien',lifeStats:'Votre vie en chiffres',sRamadans:'Ramadans',sEids:'Aïds',sDays:'Jours hégriens',sFridays:'Vendredis',
+    birthHijri:'Date de naissance hégrienne',nextBirthday:'Prochain anniversaire hégirien',dayBorn:'Jour de naissance',islamicCentury:'Siècle islamique',
+    bornIn:'Vous êtes né(e) en',youWitnessed:'Vous avez vécu',makeCard:'Générer une carte',resetAge:'← Recalculer',
+    islamicCal:'Calendrier islamique',dailyHadith:'Hadith du jour',dailyVerse:'Verset du jour',tasbeeh:'Compteur de Tasbeeh',
+    duas:'Duas du jour',yourCard:'Votre carte islamique',noAgeMsg:'Entrez votre date de naissance dans l\'onglet Mon Âge.',
+    shareFb:'Partager sur Facebook',download:'↓ Télécharger',years:'Ans',months:'Mois',days:'Jours',
+    ry:'Ans',rm:'Mois',rd:'Jours',prev:'← Précédent',next:'Suivant →',reset:'Réinitialiser',
+    daysLeft:'jours restants ce mois',factDays:'Vous avez vécu environ %d jours dans le calendrier hégirien.',
+    proverb:'"Quand on atteint quarante ans, son compte est réglé." — Proverbe arabe',
+    dayNames:['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
+    duaCats:{morning:'Matin',evening:'Soir',food:'Repas',sleep:'Sommeil',travel:'Voyage',anxiety:'Anxiété'}},
+  tr:{appName:'İslami Yol Arkadaşı',tabHome:'Ana Sayfa',tabAge:'Yaşım',tabEvents:'Etkinlikler',tabDaily:'Günlük',tabShare:'Paylaş',
+    aboutMonth:'Bu Ay Hakkında',upcoming:'Yaklaşan Etkinlikler',dailySunnah:'Günün Sünneti',sunnahSub:'Her gün basit bir amel.',
+    enterDob:'Doğum Tarihinizi Girin',dobLabel:'Doğum tarihi (Miladi)',calcBtn:'Hicri Yaşımı Hesapla',
+    yourAge:'Hicri Yaşınız',lifeStats:'Hayatınız Rakamlarda',sRamadans:'Ramazan',sEids:'Bayram',sDays:'Hicri Gün',sFridays:'Cuma',
+    birthHijri:'Hicri Doğum Tarihi',nextBirthday:'Sonraki Hicri Doğum Günü',dayBorn:'Doğduğunuz Gün',islamicCentury:'İslami Yüzyıl',
+    bornIn:'Doğduğunuz ay',youWitnessed:'Yaşadıklarınız',makeCard:'Paylaşım Kartı Oluştur',resetAge:'← Başka tarih hesapla',
+    islamicCal:'İslami Takvim',dailyHadith:'Günün Hadisi',dailyVerse:'Günün Ayeti',tasbeeh:'Tesbih Sayacı',
+    duas:'Günlük Dualar',yourCard:'İslami Kartınız',noAgeMsg:'Kartınızı oluşturmak için Yaşım sekmesine gidin.',
+    shareFb:'Facebook\'ta Paylaş',download:'↓ İndir',years:'Yıl',months:'Ay',days:'Gün',
+    ry:'Yıl',rm:'Ay',rd:'Gün',prev:'← Önceki',next:'Sonraki →',reset:'Sıfırla',
+    daysLeft:'bu ayda kalan gün',factDays:'Hicri takvimde yaklaşık %d gün yaşadınız.',
+    proverb:'"İnsan kırkına ulaştığında, hesabı verilmiştir." — Arap atasözü',
+    dayNames:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'],
+    duaCats:{morning:'Sabah',evening:'Akşam',food:'Yemek',sleep:'Uyku',travel:'Seyahat',anxiety:'Kaygı'}}
+};
+// Fill missing langs with English
+['ur','fa','id','ms','es','de','bn','hi'].forEach(function(l){
+  T[l] = Object.assign({},T.en,{ry:LANGS[l]?T.en.ry:T.en.ry});
+});
+T.ur.appName='اسلامی رفیق'; T.ur.tabHome='ہوم'; T.ur.tabAge='میری عمر'; T.ur.calcBtn='میری ہجری عمر حساب کریں';
+T.fa.appName='همراه اسلامی'; T.fa.tabHome='خانه'; T.fa.tabAge='سن من'; T.fa.calcBtn='محاسبه سن هجری';
+
+// ══════════════════════════════════════════════════════════════
+// HIJRI CONVERSION
+// ══════════════════════════════════════════════════════════════
+function gregorianToHijri(gy,gm,gd){
+  var jd=Math.floor((1461*(gy+4800+Math.floor((gm-14)/12)))/4)
+        +Math.floor((367*(gm-2-12*Math.floor((gm-14)/12)))/12)
+        -Math.floor((3*(Math.floor((gy+4900+Math.floor((gm-14)/12))/100)))/4)+gd-32075;
+  var l=jd-1948440+10632,n=Math.floor((l-1)/10631);
+  l=l-10631*n+354;
+  var j=Math.floor((10985-l)/5316)*Math.floor((50*l)/17719)+Math.floor(l/5670)*Math.floor((43*l)/15238);
+  l=l-Math.floor((30-j)/15)*Math.floor((17719*j)/50)-Math.floor(j/16)*Math.floor((15238*j)/43)+29;
+  return{year:30*n+j-30,month:Math.floor((24*l)/709),day:l-Math.floor((709*Math.floor((24*l)/709))/24)};
+}
+function hijriToGregorian(hy,hm,hd){
+  var jd=Math.floor((11*hy+3)/30)+354*hy+30*hm-Math.floor((hm-1)/2)+hd+1948440-385;
+  var l=jd+68569,n=Math.floor((4*l)/146097);
+  l=l-Math.floor((146097*n+3)/4);
+  var iy=Math.floor((4000*(l+1))/1461001);
+  l=l-Math.floor((1461*iy)/4)+31;
+  var im=Math.floor((80*l)/2447),id=l-Math.floor((2447*im)/80);
+  l=Math.floor(im/11);
+  return{year:100*(n-49)+iy+l,month:im+2-12*l,day:id};
+}
+function hijriDiff(b,t){
+  var y=t.year-b.year,m=t.month-b.month,d=t.day-b.day;
+  if(d<0){m--;d+=30;}if(m<0){y--;m+=12;}
+  return{years:y,months:m,days:d};
+}
+function daysInHijriMonth(hy,hm){
+  var g1=hijriToGregorian(hy,hm,1),g2=hijriToGregorian(hm===12?hy+1:hy,hm===12?1:hm+1,1);
+  var d1=new Date(g1.year,g1.month-1,g1.day),d2=new Date(g2.year,g2.month-1,g2.day);
+  return Math.round((d2-d1)/86400000);
+}
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+var today=new Date();
+var currentLang=localStorage.getItem('ilc_lang')||detectLang();
+var isDark=localStorage.getItem('ilc_theme')!=='light';
+var tasbeehCount=parseInt(localStorage.getItem('ilc_tasbeeh')||'0');
+var tasbeehTarget=parseInt(localStorage.getItem('ilc_target')||'33');
+var hadithIdx=parseInt(localStorage.getItem('ilc_hadith')||(today.getDate()%HADITHS.length));
+var verseIdx=parseInt(localStorage.getItem(' ilc_verse')||(today.getDate()%VERSES.length));
+var currentDuaCat='morning';
+var lastBirth=null;
+var cachedAge=null;
+
+function detectLang(){
+  var n=(navigator.language||'en').split('-')[0].toLowerCase();
+  return T[n]?n:'en';
+}
+
+// ══════════════════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════════════════
+function showTab(name,btn){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='share') renderShareCard();
+}
+
+// ══════════════════════════════════════════════════════════════
+// THEME
+// ══════════════════════════════════════════════════════════════
+function toggleTheme(){
+  isDark=!isDark;
+  document.body.classList.toggle('light',!isDark);
+  localStorage.setItem('ilc_theme',isDark?'dark':'light');
+}
+
+// ══════════════════════════════════════════════════════════════
+// LANGUAGE
+// ══════════════════════════════════════════════════════════════
+function buildLangBar(){
+  var bar=document.getElementById('langBar');
+  bar.innerHTML='';
+  Object.keys(LANGS).forEach(function(code){
+    var b=document.createElement('button');
+    b.className='lang-btn'+(code===currentLang?' active':'');
+    b.dataset.lang=code; b.textContent=LANGS[code].name;
+    b.onclick=function(){setLang(code);};
+    bar.appendChild(b);
+  });
+}
+function showLangPanel(){ document.getElementById('page-home').scrollIntoView(); showTab('home',document.querySelector('.tab')); }
+function setLang(code){
+  currentLang=code;
+  var L=T[code]||T.en,dir=LANGS[code].dir;
+  document.documentElement.lang=code;
+  document.documentElement.dir=dir;
+  localStorage.setItem('ilc_lang',code);
+  applyTranslations(L);
+  buildLangBar();
+  if(cachedAge) renderAgeResult(cachedAge);
+  renderDuas(currentDuaCat);
+}
+function applyTranslations(L){
+  var ids={
+    'h-app-name':'appName','t-tab-home':'tabHome','t-tab-age':'tabAge',
+    't-tab-events':'tabEvents','t-tab-daily':'tabDaily','t-tab-share':'tabShare',
+    't-about-month':'aboutMonth','t-upcoming':'upcoming','t-daily-sunnah':'dailySunnah',
+    't-sunnah-sub':'sunnahSub','t-enter-dob':'enterDob','t-dob-label':'dobLabel',
+    't-calc-btn':'calcBtn','t-your-age':'yourAge','t-life-stats':'lifeStats',
+    't-s-ramadans':'sRamadans','t-s-eids':'sEids','t-s-days':'sDays','t-s-fridays':'sFridays',
+    't-birth-hijri':'birthHijri','t-next-birthday':'nextBirthday','t-day-born':'dayBorn',
+    't-islamic-century':'islamicCentury','t-born-in':'bornIn','t-you-have-witnessed':'youWitnessed',
+    't-make-card':'makeCard','t-reset-age':'resetAge','t-islamic-calendar':'islamicCal',
+    't-daily-hadith':'dailyHadith','t-daily-verse':'dailyVerse','t-tasbeeh':'tasbeeh',
+    't-duas':'duas','t-your-card':'yourCard','t-no-age-msg':'noAgeMsg',
+    't-share-fb':'shareFb','t-download':'download','t-ry':'ry','t-rm':'rm','t-rd':'rd',
+    't-prev':'prev','t-next':'next','t-reset':'reset'
+  };
+  Object.keys(ids).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el&&L[ids[id]]) el.textContent=L[ids[id]];
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// HOME — Today's Info
+// ══════════════════════════════════════════════════════════════
+function renderHome(){
+  var h=gregorianToHijri(today.getFullYear(),today.getMonth()+1,today.getDate());
+  var monthsEn=HIJRI_MONTHS_EN,monthsLang=(currentLang==='ar'?HIJRI_MONTHS_AR:HIJRI_MONTHS_EN);
+  document.getElementById('h-day').textContent=h.day;
+  document.getElementById('h-month-name').textContent=monthsLang[h.month-1];
+  document.getElementById('h-year-ah').textContent=h.year+' AH';
+  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('h-greg-date').textContent=days[today.getDay()]+', '+today.toLocaleDateString();
+  // Month progress
+  var mDays=daysInHijriMonth(h.year,h.month);
+  var pct=Math.round((h.day/mDays)*100);
+  document.getElementById('monthProgress').style.width=pct+'%';
+  var rem=mDays-h.day;
+  var L=T[currentLang]||T.en;
+  document.getElementById('h-month-remaining').textContent=rem+' '+(L.daysLeft||'days left in this month');
+  // Month description
+  document.getElementById('monthDesc').textContent=MONTH_DESC[h.month-1];
+  // Sunnah
+  var si=today.getDate()%SUNNAH.length;
+  document.getElementById('sunnahText').textContent=SUNNAH[si];
+  // Events
+  renderUpcomingEvents(h);
+  // Full events list
+  renderEventsList(h);
+}
+
+function getEventDate(defn,hijriYear){
+  var g=hijriToGregorian(hijriYear,defn.month,defn.day);
+  return new Date(g.year,g.month-1,g.day);
+}
+
+function getNextEventDate(defn,hijriYear){
+  var d=getEventDate(defn,hijriYear);
+  var todayMidnight=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  if(d<todayMidnight){
+    d=getEventDate(defn,hijriYear+1);
+  }
+  return d;
+}
+
+function renderUpcomingEvents(h){
+  var container=document.getElementById('upcomingEvents');
+  var todayMid=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  var events=ISLAMIC_EVENTS_DEF.map(function(e){
+    var d=getNextEventDate(e,h.year);
+    var days=Math.round((d-todayMid)/86400000);
+    return{name:(currentLang==='ar'?e.nameAr:e.name),days:days,date:d};
+  }).sort(function(a,b){return a.days-b.days;}).slice(0,4);
+
+  container.innerHTML='';
+  events.forEach(function(e,i){
+    var div=document.createElement('div');
+    div.className='event-card'+(i===0?' next':'');
+    div.innerHTML='<div class="ev-name">'+e.name+'</div>'+
+      '<div class="ev-days">'+e.days+'</div>'+
+      '<div class="ev-label">'+(e.days===0?'Today!':e.days===1?'Tomorrow':'Days Away')+'</div>';
+    container.appendChild(div);
+  });
+}
+
+function renderEventsList(h){
+  var list=document.getElementById('eventsList');
+  var todayMid=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  var events=ISLAMIC_EVENTS_DEF.map(function(e){
+    var d=getNextEventDate(e,h.year);
+    var days=Math.round((d-todayMid)/86400000);
+    var g=d;
+    return{name:(currentLang==='ar'?e.nameAr:e.name),days:days,date:g};
+  }).sort(function(a,b){return a.days-b.days;});
+
+  list.innerHTML='';
+  events.forEach(function(e,i){
+    var div=document.createElement('div');
+    var past=e.days<0;
+    div.className='ev-row'+(i===0&&!past?' next-ev':'')+(past?' passed':'');
+    var dateStr=e.date.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+    div.innerHTML='<div class="ev-info"><div class="ev-row-name">'+e.name+'</div>'+
+      '<div class="ev-row-date">'+dateStr+'</div></div>'+
+      '<div class="ev-count-wrap"><div class="ev-count-num">'+Math.abs(e.days)+'</div>'+
+      '<div class="ev-count-lbl">'+(past?'days ago':'days left')+'</div></div>';
+    list.appendChild(div);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// AGE CALCULATOR
+// ══════════════════════════════════════════════════════════════
+function calculateAge(){
+  var val=document.getElementById('dob').value;
+  var L=T[currentLang]||T.en;
+  if(!val){alert(L.enterDob||'Please select your date of birth');return;}
+  var p=val.split('-'),y=+p[0],m=+p[1],d=+p[2];
+  if(new Date(y,m-1,d)>=today){alert('Birth date must be in the past');return;}
+  lastBirth={y:y,m:m,d:d};
+  var birthH=gregorianToHijri(y,m,d);
+  var todayH=gregorianToHijri(today.getFullYear(),today.getMonth()+1,today.getDate());
+  var age=hijriDiff(birthH,todayH);
+  var totalHijriDays=Math.round((today-new Date(y,m-1,d))/86400000*(354.37/365.25));
+  var ramadans=age.years+(age.months>=9?1:0);
+  var eids=ramadans*2;
+  var fridays=Math.floor(totalHijriDays/7);
+  // Next birthday
+  var nextBY=todayH.year+(birthH.month>todayH.month||(birthH.month===todayH.month&&birthH.day>todayH.day)?0:1);
+  var nextBG=hijriToGregorian(nextBY,birthH.month,birthH.day);
+  var nextBDate=new Date(nextBG.year,nextBG.month-1,nextBG.day);
+  var daysToNext=Math.round((nextBDate-today)/86400000);
+  // Day born
+  var birthDate=new Date(y,m-1,d);
+  var dayBorn=(T[currentLang]&&T[currentLang].dayNames)?T[currentLang].dayNames[birthDate.getDay()]:(T.en.dayNames[birthDate.getDay()]);
+  // Century
+  var century=Math.ceil(birthH.year/100);
+  var ordinal=century===14?'14th':century===15?'15th':(century+'th');
+  cachedAge={age:age,birthH:birthH,todayH:todayH,totalHijriDays:totalHijriDays,
+    ramadans:ramadans,eids:eids,fridays:fridays,daysToNext:daysToNext,
+    nextBG:nextBG,nextBDate:nextBDate,dayBorn:dayBorn,century:ordinal,birthDate:birthDate};
+  document.getElementById('ageInput').style.display='none';
+  document.getElementById('ageResult').style.display='';
+  renderAgeResult(cachedAge);
+}
+
+function renderAgeResult(data){
+  var L=T[currentLang]||T.en;
+  var months=currentLang==='ar'?HIJRI_MONTHS_AR:HIJRI_MONTHS_EN;
+  document.getElementById('rYears').textContent=data.age.years;
+  document.getElementById('rMonths').textContent=data.age.months;
+  document.getElementById('rDays').textContent=data.age.days;
+  document.getElementById('sRamadans').textContent=data.ramadans;
+  document.getElementById('sEids').textContent=data.eids;
+  document.getElementById('sTotalDays').textContent=data.totalHijriDays.toLocaleString();
+  document.getElementById('sFridays').textContent=data.fridays.toLocaleString();
+  document.getElementById('rBirthHijri').textContent=data.birthH.day+' '+months[data.birthH.month-1]+' '+data.birthH.year+' AH';
+  var nextBStr=months[data.birthH.month-1]+' '+data.birthH.day+', '+data.nextBG.year+' ('+data.daysToNext+' days away)';
+  document.getElementById('rNextBirthday').textContent=nextBStr;
+  document.getElementById('rDayBorn').textContent=data.dayBorn;
+  document.getElementById('rCentury').textContent=data.century+' Islamic Century';
+  // Fun fact
+  var fact=(L.factDays||'You have lived approximately %d days.').replace('%d',data.totalHijriDays.toLocaleString());
+  if(data.age.years>=40) fact+=' '+(L.proverb||'');
+  document.getElementById('rFact').innerHTML=fact;
+  // Birth month milestone
+  document.getElementById('bmMonth').textContent=months[data.birthH.month-1];
+  document.getElementById('bmDesc').textContent=MONTH_DESC[data.birthH.month-1].substring(0,120)+'...';
+  // Milestones
+  var ml=document.getElementById('milestoneList');
+  var items=[
+    {icon:'🌙',text:data.ramadans+' Ramadans'},
+    {icon:'✨',text:data.eids+' Eids'},
+    {icon:'📅',text:data.totalHijriDays.toLocaleString()+' Hijri Days'},
+    {icon:'🕌',text:data.fridays.toLocaleString()+' Fridays'},
+    {icon:'📿',text:Math.floor(data.fridays*40).toLocaleString()+' estimated Rak\'ahs'},
+    {icon:'🌅',text:data.age.years+' Islamic years of life'},
+  ];
+  ml.innerHTML=items.map(function(i){
+    return'<div class="milestone-item"><span class="mi-icon">'+i.icon+'</span><span>'+i.text+'</span></div>';
+  }).join('');
+}
+
+function resetAge(){
+  lastBirth=null; cachedAge=null;
+  document.getElementById('ageInput').style.display='';
+  document.getElementById('ageResult').style.display='none';
+  document.getElementById('dob').value='';
+}
+function goShare(){
+  showTab('share',document.querySelectorAll('.tab')[4]);
+}
+
+// ══════════════════════════════════════════════════════════════
+// DAILY — Hadith & Verse & Tasbeeh & Duas
+// ══════════════════════════════════════════════════════════════
+function renderHadith(){
+  var h=HADITHS[hadithIdx%HADITHS.length];
+  document.getElementById('hadithText').textContent=h.text;
+  document.getElementById('hadithSource').textContent=h.source;
+}
+function prevHadith(){hadithIdx=(hadithIdx-1+HADITHS.length)%HADITHS.length;localStorage.setItem('ilc_hadith',hadithIdx);renderHadith();}
+function nextHadith(){hadithIdx=(hadithIdx+1)%HADITHS.length;localStorage.setItem('ilc_hadith',hadithIdx);renderHadith();}
+
+function renderVerse(){
+  var v=VERSES[verseIdx%VERSES.length];
+  document.getElementById('verseArabic').textContent=v.arabic;
+  document.getElementById('verseTranslation').textContent=v.translation;
+  document.getElementById('verseRef').textContent=v.ref;
+}
+function prevVerse(){verseIdx=(verseIdx-1+VERSES.length)%VERSES.length;renderVerse();}
+function nextVerse(){verseIdx=(verseIdx+1)%VERSES.length;renderVerse();}
+
+function tapTasbeeh(){
+  tasbeehCount++;
+  document.getElementById('tasbeehCount').textContent=tasbeehCount;
+  document.getElementById('tasbeehCount').classList.remove('count-up');
+  void document.getElementById('tasbeehCount').offsetWidth;
+  document.getElementById('tasbeehCount').classList.add('count-up');
+  if(tasbeehCount===tasbeehTarget){
+    navigator.vibrate&&navigator.vibrate([100,50,100]);
+  }
+  localStorage.setItem('ilc_tasbeeh',tasbeehCount);
+  document.getElementById('tasbeehTarget').textContent='Target: '+tasbeehTarget+' | Count: '+tasbeehCount;
+}
+function setTarget(n){tasbeehTarget=n;localStorage.setItem('ilc_target',n);resetTasbeeh();}
+function resetTasbeeh(){tasbeehCount=0;localStorage.setItem('ilc_tasbeeh',0);document.getElementById('tasbeehCount').textContent=0;document.getElementById('tasbeehTarget').textContent='Target: '+tasbeehTarget;}
+
+function renderDuaCats(){
+  var bar=document.getElementById('duaCats');
+  var L=T[currentLang]||T.en;
+  var cats=Object.keys(DUAS);
+  bar.innerHTML='';
+  cats.forEach(function(cat){
+    var b=document.createElement('button');
+    b.className='dua-cat-btn'+(cat===currentDuaCat?' active':'');
+    b.textContent=(L.duaCats&&L.duaCats[cat])||cat;
+    b.onclick=function(){
+      currentDuaCat=cat;
+      document.querySelectorAll('.dua-cat-btn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      renderDuas(cat);
+    };
+    bar.appendChild(b);
+  });
+}
+function renderDuas(cat){
+  var list=document.getElementById('duaList');
+  var duas=DUAS[cat]||[];
+  list.innerHTML=duas.map(function(d){
+    return'<div class="dua-item"><div class="dua-arabic">'+d.arabic+'</div>'+
+      '<div class="dua-translation">'+d.translation+'</div>'+
+      '<div class="dua-source">'+d.source+'</div></div>';
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// SHARE CARD — Canvas
+// ══════════════════════════════════════════════════════════════
+function renderShareCard(){
+  var hasAge=!!cachedAge;
+  document.getElementById('shareNoAge').style.display=hasAge?'none':'';
+  document.getElementById('shareWithAge').style.display=hasAge?'':'none';
+  if(!hasAge) return;
+  var canvas=document.getElementById('shareCanvas');
+  var ctx=canvas.getContext('2d');
+  var W=1080,H=1080;
+  canvas.width=W; canvas.height=H;
+  // Background
+  var grad=ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,'#1a1a2e'); grad.addColorStop(.5,'#16213e'); grad.addColorStop(1,'#0f3460');
+  ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+  // Stars
+  ctx.fillStyle='rgba(255,255,255,0.6)';
+  [[150,120],[320,80],[700,150],[900,90],[200,400],[850,350],[100,700],[950,600],[400,900],[750,850]].forEach(function(s){
+    ctx.beginPath(); ctx.arc(s[0],s[1],2,0,Math.PI*2); ctx.fill();
+  });
+  // Decorative circle
+  ctx.beginPath(); ctx.arc(W/2,H/2,400,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,215,0,0.08)'; ctx.lineWidth=2; ctx.stroke();
+  ctx.beginPath(); ctx.arc(W/2,H/2,480,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,215,0,0.04)'; ctx.lineWidth=1; ctx.stroke();
+  // Moon emoji area
+  ctx.font='100px serif'; ctx.textAlign='center'; ctx.fillStyle='rgba(255,215,0,0.9)';
+  ctx.fillText('☪️',W/2,180);
+  // App name
+  ctx.font='bold 42px Arial,sans-serif'; ctx.fillStyle='rgba(255,215,0,0.7)';
+  ctx.fillText('Islamic Life Companion',W/2,260);
+  // Separator
+  ctx.strokeStyle='rgba(255,215,0,0.4)'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(200,290); ctx.lineTo(880,290); ctx.stroke();
+  // Today Hijri
+  var todayH=cachedAge.todayH;
+  var months=HIJRI_MONTHS_EN;
+  ctx.font='bold 36px Arial'; ctx.fillStyle='rgba(255,255,255,0.7)';
+  ctx.fillText('Today: '+todayH.day+' '+months[todayH.month-1]+' '+todayH.year+' AH',W/2,340);
+  // Big age
+  ctx.font='bold 36px Arial'; ctx.fillStyle='rgba(255,255,255,0.6)';
+  ctx.fillText('You are',W/2,400);
+  ctx.font='bold 140px Arial'; ctx.fillStyle='#ffd700';
+  ctx.shadowColor='rgba(255,215,0,0.5)'; ctx.shadowBlur=30;
+  ctx.fillText(cachedAge.age.years,W/2,550);
+  ctx.shadowBlur=0;
+  ctx.font='bold 48px Arial'; ctx.fillStyle='#ffd700';
+  ctx.fillText('Hijri Years',W/2,620);
+  ctx.font='36px Arial'; ctx.fillStyle='rgba(255,255,255,0.7)';
+  ctx.fillText(cachedAge.age.months+' Months  '+cachedAge.age.days+' Days',W/2,675);
+  // Stats
+  ctx.strokeStyle='rgba(255,215,0,0.3)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(200,710); ctx.lineTo(880,710); ctx.stroke();
+  ctx.font='bold 32px Arial'; ctx.fillStyle='rgba(255,255,255,0.6)';
+  ctx.fillText('You have witnessed',W/2,755);
+  var stats=[
+    {icon:'🌙',val:cachedAge.ramadans,lbl:'Ramadans'},
+    {icon:'✨',val:cachedAge.eids,lbl:'Eids'},
+    {icon:'📅',val:cachedAge.totalHijriDays.toLocaleString(),lbl:'Days'},
+    {icon:'🕌',val:cachedAge.fridays.toLocaleString(),lbl:'Fridays'}
+  ];
+  stats.forEach(function(s,i){
+    var x=140+(i%2)*400,y=820+(Math.floor(i/2)*110);
+    ctx.font='32px serif'; ctx.fillText(s.icon,x,y);
+    ctx.font='bold 44px Arial'; ctx.fillStyle='#ffd700'; ctx.textAlign='left';
+    ctx.fillText(s.val,x+55,y+5);
+    ctx.font='26px Arial'; ctx.fillStyle='rgba(255,255,255,0.55)';
+    ctx.fillText(s.lbl,x+55,y+38);
+    ctx.textAlign='center';
+  });
+  // Alhamdulillah
+  ctx.font='bold 38px Arial'; ctx.fillStyle='rgba(255,215,0,0.85)';
+  ctx.textAlign='center'; ctx.fillText('الحمد لله',W/2,1040);
+}
+
+function shareCard(){
+  var canvas=document.getElementById('shareCanvas');
+  if(navigator.share){
+    canvas.toBlob(function(blob){
+      navigator.share({title:'My Hijri Age',files:[new File([blob],'hijri-age.png',{type:'image/png'})]}).catch(function(){});
+    });
+  } else {
+    var url=encodeURIComponent(window.location.href);
+    window.open('https://www.facebook.com/sharer/sharer.php?u='+url,'_blank');
+  }
+}
+function downloadCard(){
+  var canvas=document.getElementById('shareCanvas');
+  var a=document.createElement('a'); a.download='hijri-age-card.png';
+  a.href=canvas.toDataURL(); a.click();
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
+
+if(typeof FBInstant!=='undefined'){
+  FBInstant.initializeAsync().then(function(){return FBInstant.startGameAsync();}).catch(function(){});
+}
+
+document.getElementById('dob').max=today.toISOString().split('T')[0];
+if(!isDark) document.body.classList.add('light');
+buildLangBar();
+setLang(currentLang);
+renderHome();
+renderHadith();
+renderVerse();
+renderDuaCats();
+renderDuas(currentDuaCat);
+document.getElementById('tasbeehCount').textContent=tasbeehCount;
+document.getElementById('tasbeehTarget').textContent='Target: '+tasbeehTarget;
+document.getElementById('app-loader')&&document.getElementById('app-loader').remove();
+</script>
+</body>
+</html>
